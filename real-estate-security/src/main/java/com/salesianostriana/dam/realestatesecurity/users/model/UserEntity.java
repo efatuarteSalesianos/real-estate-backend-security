@@ -23,7 +23,7 @@ public class UserEntity implements UserDetails, Serializable {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre, apellidos, direccion, telefono, avatar, password;
+    private String nombre, apellidos, direccion, telefono, avatar, password, fullName;
 
     @NaturalId
     @Column(unique = true, updatable = false)

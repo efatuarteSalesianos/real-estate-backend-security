@@ -5,8 +5,8 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
 @Builder
-public class GetUserDto {
+public class CreateUserDto {
 
-    private String email, avatar, fullName, role;
+    private String email, fullname, avatar, password, password2;
 
 }
