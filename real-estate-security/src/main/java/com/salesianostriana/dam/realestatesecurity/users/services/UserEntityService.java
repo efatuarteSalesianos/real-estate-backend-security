@@ -12,9 +12,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service("userDeatilService")
 @RequiredArgsConstructor
-public class UserEntityService extends BaseService<UserEntity, Long, UserEntityRepository> implements UserDetailsService {
+public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityRepository> implements UserDetailsService {
 
     private PasswordEncoder passwordEncoder;
 
@@ -31,7 +33,7 @@ public class UserEntityService extends BaseService<UserEntity, Long, UserEntityR
                     .fullName(newUser.getFullname())
                     .avatar(newUser.getAvatar())
                     .password(passwordEncoder.encode(newUser.getPassword()))
-                    .role(UserRoles.USER)
+                    .role(UserRoles.PROPIETARIO)
                     .build();
             return save(userEntity);
         }
