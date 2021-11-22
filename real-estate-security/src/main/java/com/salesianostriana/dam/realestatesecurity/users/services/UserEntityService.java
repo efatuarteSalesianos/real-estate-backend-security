@@ -26,14 +26,14 @@ public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityR
                 .orElseThrow(()-> new UsernameNotFoundException(email + " no encontrado"));
     }
 
-    public UserEntity save(CreateUserDto newUser) {
+    public UserEntity save(CreateUserDto newUser, UserRoles role) {
         if(newUser.getPassword().contentEquals(newUser.getPassword2())) {
             UserEntity userEntity = UserEntity.builder()
                     .email(newUser.getEmail())
                     .fullName(newUser.getFullname())
                     .avatar(newUser.getAvatar())
                     .password(passwordEncoder.encode(newUser.getPassword()))
-                    .role(UserRoles.PROPIETARIO)
+                    .role(role)
                     .build();
             return save(userEntity);
         }
