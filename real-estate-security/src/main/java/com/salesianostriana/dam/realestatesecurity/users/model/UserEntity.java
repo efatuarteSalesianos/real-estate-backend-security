@@ -35,7 +35,7 @@ public class UserEntity implements UserDetails, Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    private String nombre, apellidos, direccion, telefono, avatar, password, fullName;
+    private String direccion, telefono, avatar, password, fullName;
 
     @NaturalId
     @Column(unique = true, updatable = false)

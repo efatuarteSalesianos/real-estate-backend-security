@@ -20,16 +20,17 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper mapper;
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
+    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e)
             throws IOException, ServletException {
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType("application/json");
+
+        httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
+        httpServletResponse.setContentType("application/json");
 
         Map<String, String> mensajes =
-                Map.of("mensaje", accessDeniedException.getLocalizedMessage());
+                Map.of("mensaje", e.getMessage());
 
-        String strJson = mapper.writeValueAsString(mensajes);
+        String strjson = mapper.writeValueAsString(mensajes);
 
-        response.getWriter().println(strJson);
+        httpServletResponse.getWriter().println(strjson);
     }
 }

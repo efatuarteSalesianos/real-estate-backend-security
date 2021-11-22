@@ -24,35 +24,36 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final UserEntityService userEntityService;
+    private final UserEntityService userService;
     private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         // 1. Obtener el token de la petición (request)
         String token = getJwtFromRequest(request);
 
         // 2. Validar token
         try {
-            if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
+        if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
 
-                UUID userId = jwtProvider.getUserIdFromJwt(token);
+            UUID userId = jwtProvider.getUserIdFromJwt(token);
 
-                Optional<UserEntity> userEntity = userEntityService.findById(userId);
+            Optional<UserEntity> userEntity = userService.findById(userId);
 
-                if (userEntity.isPresent()) {
-                    UserEntity user = userEntity.get();
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    user.getRole(),
-                                    user.getAuthorities()
-                            );
-                    authentication.setDetails(new WebAuthenticationDetails(request));
+            if (userEntity.isPresent()) {
+                UserEntity user = userEntity.get();
+                UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        user,
+                        user.getRole(),
+                        user.getAuthorities()
+                );
+                authentication.setDetails(new WebAuthenticationDetails(request));
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+        }
 
         } catch (Exception ex) {
             // Informar en el log
@@ -65,11 +66,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        // Authorization: Bearer eltoken.qiemas.megusta
+        // Authorization: Bearer header.payload.signature
         String bearerToken = request.getHeader(JwtProvider.TOKEN_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtProvider.TOKEN_PREFIX)) {
             return bearerToken.substring(JwtProvider.TOKEN_PREFIX.length());
         }
         return null;
     }
+
 }

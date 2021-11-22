@@ -1,7 +1,6 @@
 package com.salesianostriana.dam.realestatesecurity.security;
 
-import com.salesianostriana.dam.realestatesecurity.security.jwt.JwtAccessDeniedHandler;
-import com.salesianostriana.dam.realestatesecurity.security.jwt.JwtAuthorizationFilter;
+import com.salesianostriana.dam.realestatesecurity.security.jwt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
                 .csrf().disable()
                     .exceptionHandling()
@@ -46,15 +44,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .sessionManagement()
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
                 .and()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "auth/register/user").anonymous()
-                    .antMatchers(HttpMethod.POST, "auth/login").anonymous()
-                    .antMatchers(HttpMethod.POST, "auth/register/gestor").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST, "auth/register/admin").hasRole("ADMIN")
-                    .antMatchers().authenticated();
+                    .antMatchers(HttpMethod.POST, "/auth/register/PROPIETARIO").anonymous()
+                    .antMatchers(HttpMethod.POST, "/auth/login").anonymous()
+                    .antMatchers(HttpMethod.POST, "/auth/register/GESTOR").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/auth/register/ADMIN").hasRole("ADMIN")
+                    .antMatchers("/h2-console/**").permitAll()
+                    .anyRequest().authenticated();
 
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+
+        // Para dar acceso a h2
+        http.headers().frameOptions().disable();
     }
 
     @Bean

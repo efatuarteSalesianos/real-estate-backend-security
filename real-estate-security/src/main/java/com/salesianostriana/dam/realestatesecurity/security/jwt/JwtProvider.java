@@ -3,10 +3,10 @@ package com.salesianostriana.dam.realestatesecurity.security.jwt;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,10 +23,10 @@ public class JwtProvider {
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
 
-    @Value("${jwt.secret:elsecretoestaenlamasa}")
+    @Value("${jwt.secret:elsecretoestaenlamasadelapizzadeltelepizza}")
     private String jwtSecret;
 
-    @Value("${jwt.duration:86400}")
+    @Value("${jwt.duration:86400}") // 1 día
     private int jwtLifeInSeconds;
 
     private JwtParser parser;
@@ -48,7 +48,6 @@ public class JwtProvider {
                         .plusSeconds(jwtLifeInSeconds)
                         .atZone(ZoneId.systemDefault()).toInstant());
 
-
         return Jwts.builder()
                 .setHeaderParam("typ", TOKEN_TYPE)
                 .setSubject(user.getId().toString())
@@ -57,8 +56,6 @@ public class JwtProvider {
                 .claim("role", user.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                 .compact();
-
-
     }
 
     public UUID getUserIdFromJwt(String token) {
@@ -69,12 +66,9 @@ public class JwtProvider {
         try {
             parser.parseClaimsJws(token);
             return true;
-        }
-        catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
             log.info("Error con el token: " + ex.getMessage());
         }
         return false;
-
     }
-
 }
