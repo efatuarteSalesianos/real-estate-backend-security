@@ -1,5 +1,8 @@
 package com.salesianostriana.dam.realestatesecurity.users.model;
 
+import com.salesianostriana.dam.realestatesecurity.model.Inmobiliaria;
+import com.salesianostriana.dam.realestatesecurity.model.Interesa;
+import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import org.hibernate.annotations.Parameter;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -43,6 +46,14 @@ public class UserEntity implements UserDetails, Serializable {
 
     private UserRoles role;
 
+    @OneToMany(mappedBy = "propietario", orphanRemoval = true)
+    private List<Vivienda> viviendas;
+
+    @OneToMany(mappedBy = "gestor", orphanRemoval = true)
+    private List<Inmobiliaria> inmobiliarias;
+
+    @OneToMany(mappedBy = "interesado", orphanRemoval = true)
+    private List<Interesa> intereses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
