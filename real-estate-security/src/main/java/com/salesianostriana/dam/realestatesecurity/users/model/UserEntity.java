@@ -13,10 +13,62 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@NamedEntityGraph(
+        name = "grafo-propietario-con-viviendas",
+        attributeNodes = {
+                @NamedAttributeNode(value = "full_name"),
+                @NamedAttributeNode(value = "direccion"),
+                @NamedAttributeNode(value = "telefono"),
+                @NamedAttributeNode(value = "avatar"),
+                @NamedAttributeNode("viviendas")
+        }
+)
+
+@NamedEntityGraph(
+        name = "grafo-gestor-con-inmobiliaria",
+        attributeNodes = {
+                @NamedAttributeNode(value = "full_name"),
+                @NamedAttributeNode(value = "direccion"),
+                @NamedAttributeNode(value = "telefono"),
+                @NamedAttributeNode(value = "avatar"),
+                @NamedAttributeNode("inmobiliaria")
+        }
+)
+
+@NamedEntityGraph(
+        name = "grafo-propietario-con-viviendas-y-subgrafos",
+        attributeNodes = {
+                @NamedAttributeNode(value = "full_name"),
+                @NamedAttributeNode(value = "direccion"),
+                @NamedAttributeNode(value = "telefono"),
+                @NamedAttributeNode(value = "avatar"),
+                @NamedAttributeNode(value = "viviendas", subgraph = "subgrafo-viviendas")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                name = "subgrafo-viviendas",
+                attributeNodes = {
+                        @NamedAttributeNode("titulo"),
+                        @NamedAttributeNode("poblacion"),
+                        @NamedAttributeNode("provincia"),
+                        @NamedAttributeNode("codigoPostal"),
+                        @NamedAttributeNode(value = "intereses", subgraph = "subgrafo-intereses")
+                }),
+                @NamedSubgraph(
+                        name = "subgrafo-intereses",
+                        attributeNodes = {
+                                @NamedAttributeNode("interesado"),
+                                @NamedAttributeNode("createdDate"),
+                                @NamedAttributeNode("mensaje")
+                        }
+                )
+        }
+)
 @Table(name = "User_Entity")
 @Entity
 @AllArgsConstructor @NoArgsConstructor
@@ -48,13 +100,14 @@ public class UserEntity implements UserDetails, Serializable {
     private UserRoles role;
 
     @OneToMany(mappedBy = "propietario", orphanRemoval = true)
-    private List<Vivienda> viviendas;
+    private List<Vivienda> viviendas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "gestor", orphanRemoval = true)
-    private List<Inmobiliaria> inmobiliarias;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inmobiliaria", foreignKey = @ForeignKey(name = "FK_GESTOR_INMOBILIARIA"), nullable = true)
+    private Inmobiliaria inmobiliaria;
 
     @OneToMany(mappedBy = "interesado", orphanRemoval = true)
-    private List<Interesa> intereses;
+    private List<Interesa> intereses = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -84,5 +137,17 @@ public class UserEntity implements UserDetails, Serializable {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    /* HELPERS CON INMOBILIARIA */
+
+    public void addToInmobiliaria(Inmobiliaria i){
+        this.inmobiliaria = i;
+        i.getGestores().add(this);
+    }
+
+    public void removeFromInmobiliaria(Inmobiliaria i){
+        i.getGestores().remove(this);
+        this.inmobiliaria = null;
     }
 }

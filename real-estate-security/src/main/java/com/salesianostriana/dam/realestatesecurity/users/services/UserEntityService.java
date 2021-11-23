@@ -6,6 +6,7 @@ import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.repositories.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Service("userDeatilService")
+@Service("userDetailService")
 @RequiredArgsConstructor
 public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityRepository> implements UserDetailsService {
 

@@ -24,6 +24,7 @@ public class Inmobiliaria implements Serializable {
     @OneToMany(mappedBy = "inmobiliaria", orphanRemoval = true)
     private List<Vivienda> viviendas = new ArrayList<>();
 
-    @ManyToOne
-    private UserEntity gestor;
+    @Builder.Default
+    @OneToMany(mappedBy = "inmobiliaria", orphanRemoval = true)
+    private List<UserEntity> gestores = new ArrayList<>();
 }
