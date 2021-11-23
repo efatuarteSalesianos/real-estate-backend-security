@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 public class GetUserDto {
 
-    private String email, avatar, fullName, role;
+    private String email, avatar, full_name, role;
 
 }

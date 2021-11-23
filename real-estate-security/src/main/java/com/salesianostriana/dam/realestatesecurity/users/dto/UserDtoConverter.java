@@ -10,8 +10,17 @@ public class UserDtoConverter {
         return GetUserDto.builder()
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
-                .fullName(user.getFullName())
+                .full_name(user.getFull_name())
                 .role(user.getRole().name())
+                .build();
+    }
+
+    public GetPropietarioDto convertUserEntityToGetPropietarioDto(UserEntity user) {
+        return GetPropietarioDto.builder()
+                .full_name(user.getFull_name())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .num_viviendas(user.getViviendas().size())
                 .build();
     }
 

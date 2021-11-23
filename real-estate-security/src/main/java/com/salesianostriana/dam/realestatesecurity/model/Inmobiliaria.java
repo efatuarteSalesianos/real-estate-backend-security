@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.realestatesecurity.model;
 
+import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,4 +23,7 @@ public class Inmobiliaria implements Serializable {
     @Builder.Default
     @OneToMany(mappedBy = "inmobiliaria", orphanRemoval = true)
     private List<Vivienda> viviendas = new ArrayList<>();
+
+    @ManyToOne
+    private UserEntity gestor;
 }

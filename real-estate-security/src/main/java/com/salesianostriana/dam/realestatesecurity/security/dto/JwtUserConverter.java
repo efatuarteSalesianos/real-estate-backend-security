@@ -8,7 +8,7 @@ public class JwtUserConverter {
 
     public JwtUserResponse convertUserToJwtUserResponse(UserEntity user, String jwt) {
         return JwtUserResponse.builder()
-                .fullName(user.getFullName())
+                .fullName(user.getFull_name())
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
                 .role(user.getRole().name())

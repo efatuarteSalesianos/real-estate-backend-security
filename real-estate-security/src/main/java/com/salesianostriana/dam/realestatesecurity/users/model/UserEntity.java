@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@Table(name = "User_Entity")
 @Entity
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
@@ -38,7 +39,7 @@ public class UserEntity implements UserDetails, Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    private String direccion, telefono, avatar, password, fullName;
+    private String direccion, telefono, avatar, password, full_name;
 
     @NaturalId
     @Column(unique = true, updatable = false)

@@ -30,7 +30,7 @@ public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityR
         if(newUser.getPassword().contentEquals(newUser.getPassword2())) {
             UserEntity userEntity = UserEntity.builder()
                     .email(newUser.getEmail())
-                    .fullName(newUser.getFullname())
+                    .full_name(newUser.getFull_name())
                     .avatar(newUser.getAvatar())
                     .password(passwordEncoder.encode(newUser.getPassword()))
                     .role(role)
