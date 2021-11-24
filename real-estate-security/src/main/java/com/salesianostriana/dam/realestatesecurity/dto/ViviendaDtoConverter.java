@@ -15,6 +15,7 @@ public class ViviendaDtoConverter {
                 .builder()
                 .id(v.getId())
                 .titulo(v.getTitulo())
+                .precio(v.getPrecio())
                 .latlng(v.getLatlng())
                 .direccion(v.getDireccion())
                 .poblacion(v.getPoblacion())
@@ -28,6 +29,7 @@ public class ViviendaDtoConverter {
                 .tienePiscina(v.isTienePiscina())
                 .tieneAscensor(v.isTieneAscensor())
                 .tieneGaraje(v.isTieneGaraje())
+                .tipo(v.getTipo())
                 .inmobiliariaId(v.getInmobiliaria()==null?null:v.getInmobiliaria().getId())
                 .propietarioId(v.getPropietario()==null?null:v.getPropietario().getId())
                 .build();

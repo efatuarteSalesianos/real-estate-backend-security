@@ -32,11 +32,10 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
     private final UserEntityService userEntityService;
     private final ViviendaDtoConverter dtoConverter;
 
-    public Vivienda save(@RequestBody CreateViviendaDto viviendaNueva, @AuthenticationPrincipal UserEntity user) {
+    public Vivienda save(CreateViviendaDto viviendaNueva, UserEntity user) {
 
         Vivienda v = dtoConverter.createViviendaDtoToVivienda(viviendaNueva);
-        UserEntity p = userEntityService.findById(user.getId()).orElse(null);
-        v.setPropietario(p);
+        v.setPropietario(user);
         this.save(v);
         return v;
     }

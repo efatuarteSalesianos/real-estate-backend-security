@@ -1,13 +1,16 @@
 package com.salesianostriana.dam.realestatesecurity.controllers;
 
 import com.salesianostriana.dam.realestatesecurity.dto.CreateViviendaDto;
+import com.salesianostriana.dam.realestatesecurity.dto.EditViviendaDto;
 import com.salesianostriana.dam.realestatesecurity.dto.GetViviendaDto;
 import com.salesianostriana.dam.realestatesecurity.dto.ViviendaDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.model.Tipo;
 import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.services.ViviendaService;
 import com.salesianostriana.dam.realestatesecurity.uploads.PaginationLinkUtils;
+import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioDto;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
+import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -65,6 +69,63 @@ public class ViviendaController {
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
             return ResponseEntity.ok().header("link", paginationLinkUtils.createLinkHeader(dtoList, uriBuilder)).body(dtoList);
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetViviendaDto> findViviendaById(@PathVariable Long id) {
+        return ResponseEntity
+                .of(service.findById(id).map(dtoConverter::viviendaToGetViviendaDto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GetViviendaDto> editVivienda(@RequestBody EditViviendaDto vivienda, @PathVariable Long id, @AuthenticationPrincipal UserEntity user) {
+        if (user.getId().equals(service.findById(id).get().getPropietario().getId()) || user.getRole().equals(UserRoles.ADMIN)) {
+            return ResponseEntity.of(
+                    service.findById(id).map(v -> {
+                                v.setTitulo(vivienda.getTitulo());
+                                v.setDescripcion(vivienda.getDescripcion());
+                                v.setAvatar(vivienda.getAvatar());
+                                v.setLatlng(vivienda.getLatlng());
+                                v.setDireccion(vivienda.getDireccion());
+                                v.setCodigoPostal(vivienda.getCodigoPostal());
+                                v.setPoblacion(vivienda.getPoblacion());
+                                v.setProvincia(vivienda.getProvincia());
+                                v.setTipo(vivienda.getTipo());
+                                v.setPrecio(vivienda.getPrecio());
+                                v.setNumHabitaciones(vivienda.getNumHabitaciones());
+                                v.setNumBanyos(vivienda.getNumBanyos());
+                                v.setTienePiscina(vivienda.isTienePiscina());
+                                v.setTieneAscensor(vivienda.isTieneAscensor());
+                                v.setTieneGaraje(vivienda.isTieneGaraje());
+                                service.save(v);
+                                return v;
+                            })
+                            .map(dtoConverter::viviendaToGetViviendaDto)
+            );
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteViviendaById(@PathVariable Long id, @AuthenticationPrincipal UserEntity user) {
+        if (user.getId().equals(service.findById(id).get().getPropietario().getId()) || user.getRole().equals(UserRoles.ADMIN)) {
+            if (service.findById(id).isEmpty())
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            Vivienda v = service.findById(id).get();
+            if (v.getInmobiliaria() != null)
+                v.removeFromInmobiliaria(v.getInmobiliaria());
+            v.removePropietario(v.getPropietario());
+            service.deleteById(id);
+            return ResponseEntity
+                    .noContent()
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
     }
 
     @GetMapping("/top/?n={limit}")

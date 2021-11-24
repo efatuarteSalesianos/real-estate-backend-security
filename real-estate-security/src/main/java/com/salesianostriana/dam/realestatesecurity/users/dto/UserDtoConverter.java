@@ -1,10 +1,17 @@
 package com.salesianostriana.dam.realestatesecurity.users.dto;
 
+import com.salesianostriana.dam.realestatesecurity.dto.ViviendaDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
+@RequiredArgsConstructor
 public class UserDtoConverter {
+
+    private final ViviendaDtoConverter viviendaDtoConverter;
 
     public GetUserDto convertUserEntityToGetUserDto(UserEntity user) {
         return GetUserDto.builder()
@@ -23,6 +30,7 @@ public class UserDtoConverter {
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
                 .num_viviendas(user.getViviendas().size())
+                .viviendas(user.getViviendas().stream().map(viviendaDtoConverter::viviendaToGetViviendaDto).collect(Collectors.toList()))
                 .build();
     }
 
