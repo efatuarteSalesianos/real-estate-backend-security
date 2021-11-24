@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 public class ViviendaDtoConverter {
 
     public GetViviendaDto viviendaToGetViviendaDto(Vivienda v) {

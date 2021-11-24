@@ -37,7 +37,7 @@ public class ViviendaController {
     private final PaginationLinkUtils paginationLinkUtils;
 
     @PostMapping("/")
-    public ResponseEntity<CreateViviendaDto> nuevaInmobiliaria(@RequestBody CreateViviendaDto viviendaNueva, @AuthenticationPrincipal UserEntity user) {
+    public ResponseEntity<CreateViviendaDto> nuevaVivienda(@RequestBody CreateViviendaDto viviendaNueva, @AuthenticationPrincipal UserEntity user) {
         service.save(viviendaNueva, user);
         return ResponseEntity.
                 status(HttpStatus.CREATED)
@@ -145,7 +145,7 @@ public class ViviendaController {
                 .build();
     }
 
-    @GetMapping("/top/?n={limit}")
+    @GetMapping("/top?n={limit}")
     public ResponseEntity<List<GetViviendaDto>> topNViviendas(@PathVariable int limit) {
         List<GetViviendaDto> topViviendas = service.topNViviendas(limit)
                 .stream()

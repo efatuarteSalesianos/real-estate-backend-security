@@ -7,6 +7,7 @@ import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,6 @@ public class UserController {
         if(saved == null)
             return ResponseEntity.badRequest().build();
         else
-            return ResponseEntity.ok(userDtoConverter.convertUserEntityToGetUserDto(saved));
+            return ResponseEntity.status(HttpStatus.CREATED).body(userDtoConverter.convertUserEntityToGetUserDto(saved));
     }
 }

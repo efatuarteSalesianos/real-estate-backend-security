@@ -32,7 +32,6 @@ import java.util.Optional;
 public class ViviendaService extends BaseService<Vivienda, Long, ViviendaRepository> {
 
     private final InmobiliariaService inmobiliariaService;
-    private final UserEntityService userEntityService;
     private final ViviendaDtoConverter dtoConverter;
 
     public Vivienda save(CreateViviendaDto viviendaNueva, UserEntity user) {
