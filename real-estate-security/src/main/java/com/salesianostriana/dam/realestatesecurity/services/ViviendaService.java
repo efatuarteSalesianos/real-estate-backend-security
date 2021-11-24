@@ -37,7 +37,7 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
         Vivienda v = dtoConverter.createViviendaDtoToVivienda(viviendaNueva);
         UserEntity p = userEntityService.findById(user.getId()).orElse(null);
         v.setPropietario(p);
-
+        this.save(v);
         return v;
     }
 
