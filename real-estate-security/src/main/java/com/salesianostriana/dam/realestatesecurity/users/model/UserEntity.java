@@ -25,7 +25,7 @@ import java.util.UUID;
                 @NamedAttributeNode(value = "direccion"),
                 @NamedAttributeNode(value = "telefono"),
                 @NamedAttributeNode(value = "avatar"),
-                @NamedAttributeNode("viviendas")
+                @NamedAttributeNode(value = "viviendas")
         }
 )
 
@@ -36,7 +36,7 @@ import java.util.UUID;
                 @NamedAttributeNode(value = "direccion"),
                 @NamedAttributeNode(value = "telefono"),
                 @NamedAttributeNode(value = "avatar"),
-                @NamedAttributeNode("inmobiliaria")
+                @NamedAttributeNode(value = "inmobiliaria")
         }
 )
 
@@ -88,7 +88,7 @@ public class UserEntity implements UserDetails, Serializable {
                     )
             }
     )
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
     private String direccion, telefono, avatar, password, full_name;

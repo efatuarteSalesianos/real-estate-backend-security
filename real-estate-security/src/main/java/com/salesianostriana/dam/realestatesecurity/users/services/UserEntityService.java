@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service("userDetailService")
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityRepository> implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
+    private final UserEntityRepository userEntityRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -41,5 +43,9 @@ public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityR
         else {
             return null;
         }
+    }
+
+    public List<UserEntity> findByRole(UserRoles role) {
+        return userEntityRepository.findUserEntityByRole(role);
     }
 }

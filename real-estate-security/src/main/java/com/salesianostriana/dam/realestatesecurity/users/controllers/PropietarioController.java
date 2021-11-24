@@ -27,9 +27,8 @@ public class PropietarioController {
 
     @GetMapping("/")
     public ResponseEntity<List<GetPropietarioDto>> getPropietarios() {
-        List<GetPropietarioDto> propietarios = userEntityService.findAll()
+        List<GetPropietarioDto> propietarios = userEntityService.findByRole(UserRoles.PROPIETARIO)
                 .stream()
-                .filter(u -> u.getRole().equals(UserRoles.PROPIETARIO))
                 .map(userDtoConverter::convertUserEntityToGetPropietarioDto)
                 .collect(Collectors.toList());
         if(propietarios.isEmpty())
@@ -41,7 +40,7 @@ public class PropietarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GetPropietarioDto> findPropietarioById(@AuthenticationPrincipal UserEntity user, @PathVariable UUID id) {
-        if(user.getId().equals(id) || user.getRole() == UserRoles.ADMIN)
+        if(user.getId().equals(id) || user.getRole().equals(UserRoles.ADMIN))
             return ResponseEntity
                     .of(userEntityService.findById(id)
                             .map(userDtoConverter::convertUserEntityToGetPropietarioDto));
@@ -50,15 +49,21 @@ public class PropietarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePropietarioById(@AuthenticationPrincipal UserEntity user, @PathVariable UUID id){
-        if(user.getId().equals(id) || user.getRole() == UserRoles.ADMIN)
-            if(userEntityService.findById(id).isEmpty()){
+        if(user.getId().equals(id) || user.getRole().equals(UserRoles.ADMIN)) {
+            if(userEntityService.findById(id).isEmpty()) {
             return ResponseEntity
                     .notFound()
                     .build();
+            }
+            else {
+                userEntityService.deleteById(id);
+                return ResponseEntity
+                        .noContent()
+                        .build();
+            }
         }
-        userEntityService.deleteById(id);
-        return ResponseEntity
-                .noContent()
-                .build();
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }
