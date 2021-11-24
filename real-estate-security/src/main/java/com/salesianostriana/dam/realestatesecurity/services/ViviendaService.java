@@ -1,7 +1,9 @@
 package com.salesianostriana.dam.realestatesecurity.services;
 
 import com.salesianostriana.dam.realestatesecurity.dto.CreateViviendaDto;
+import com.salesianostriana.dam.realestatesecurity.dto.GetViviendaDto;
 import com.salesianostriana.dam.realestatesecurity.dto.ViviendaDtoConverter;
+import com.salesianostriana.dam.realestatesecurity.model.Inmobiliaria;
 import com.salesianostriana.dam.realestatesecurity.model.Tipo;
 import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.repositories.ViviendaRepository;
@@ -29,6 +31,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ViviendaService extends BaseService<Vivienda, Long, ViviendaRepository> {
 
+    private final InmobiliariaService inmobiliariaService;
     private final UserEntityService userEntityService;
     private final ViviendaDtoConverter dtoConverter;
 
@@ -227,6 +230,33 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
                 .and(specTipo);
 
         return this.repositorio.findAll(todas, pageable);
+    }
+
+    public ResponseEntity<GetViviendaDto> asignarInmobiliariaAVivienda(Long id, Long id2) {
+        if (this.findById(id).isEmpty() || inmobiliariaService.findById(id2).isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        Vivienda v = this.findById(id).get();
+        Inmobiliaria inmobiliaria = inmobiliariaService.findById(id2).get();
+        v.addToInmobiliaria(inmobiliaria);
+        this.save(v);
+        GetViviendaDto viviendaDto = this.findById(id).map(dtoConverter::viviendaToGetViviendaDto).get();
+        return ResponseEntity.ok().body(viviendaDto);
+    }
+
+    public ResponseEntity<?> eliminarInmobiliariaDeVivienda(Long id, Long id2) {
+        if (this.findById(id).isEmpty() || inmobiliariaService.findById(id2).isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        Vivienda v = this.findById(id).get();
+        Inmobiliaria inmobiliaria = inmobiliariaService.findById(id2).get();
+        v.removeFromInmobiliaria(inmobiliaria);
+        this.save(v);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     public List<Vivienda> topNViviendas(int limit) {

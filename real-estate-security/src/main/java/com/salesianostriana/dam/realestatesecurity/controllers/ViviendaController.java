@@ -8,7 +8,6 @@ import com.salesianostriana.dam.realestatesecurity.model.Tipo;
 import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.services.ViviendaService;
 import com.salesianostriana.dam.realestatesecurity.uploads.PaginationLinkUtils;
-import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioDto;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
@@ -123,6 +122,24 @@ public class ViviendaController {
                     .noContent()
                     .build();
         }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+    }
+
+    @PostMapping("/{id}/inmobiliaria/{id2}")
+    public ResponseEntity<GetViviendaDto> asignarInmobiliariaAVivienda(@PathVariable Long id, @PathVariable Long id2, @AuthenticationPrincipal UserEntity user) {
+        if (user.getId().equals(service.findById(id).get().getPropietario().getId()) || user.getRole().equals(UserRoles.ADMIN))
+            return service.asignarInmobiliariaAVivienda(id, id2);
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+    }
+
+    @DeleteMapping("/{id}/inmobiliaria/{id2}")
+    public ResponseEntity<?> eliminarInmobiliariaDeVivienda(@PathVariable Long id, @PathVariable Long id2, @AuthenticationPrincipal UserEntity user) {
+        if (user.getId().equals(service.findById(id).get().getPropietario().getId()) || user.getRole().equals(UserRoles.ADMIN))
+            return service.eliminarInmobiliariaDeVivienda(id, id2);
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build();
