@@ -40,7 +40,7 @@ public class UserDtoConverter {
                 .full_name(user.getFull_name())
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
-                .inmobiliaria(user.getInmobiliaria())
+                .inmobiliariaId(user.getInmobiliaria().getId())
                 .build();
     }
 

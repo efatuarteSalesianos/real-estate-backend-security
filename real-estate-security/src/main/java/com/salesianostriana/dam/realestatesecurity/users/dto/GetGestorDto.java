@@ -15,5 +15,5 @@ public class GetGestorDto {
 
     private UUID id;
     private String full_name, email, avatar;
-    private Inmobiliaria inmobiliaria;
+    private Long inmobiliariaId;
 }

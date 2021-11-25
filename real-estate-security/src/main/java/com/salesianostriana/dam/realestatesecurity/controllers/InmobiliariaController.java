@@ -8,10 +8,7 @@ import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.services.InmobiliariaService;
 import com.salesianostriana.dam.realestatesecurity.services.ViviendaService;
 import com.salesianostriana.dam.realestatesecurity.uploads.PaginationLinkUtils;
-import com.salesianostriana.dam.realestatesecurity.users.dto.CreateUserDto;
-import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioDto;
-import com.salesianostriana.dam.realestatesecurity.users.dto.GetUserDto;
-import com.salesianostriana.dam.realestatesecurity.users.dto.UserDtoConverter;
+import com.salesianostriana.dam.realestatesecurity.users.dto.*;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
@@ -50,7 +47,7 @@ public class InmobiliariaController {
     }
 
     @PostMapping("/{id}/gestor")
-    public ResponseEntity<GetUserDto> nuevoGestorEnInmobiliaria(@PathVariable Long id, @RequestBody CreateUserDto nuevoGestor, @AuthenticationPrincipal UserEntity user) {
+    public ResponseEntity<GetGestorDto> nuevoGestorEnInmobiliaria(@PathVariable Long id, @RequestBody CreateUserDto nuevoGestor, @AuthenticationPrincipal UserEntity user) {
         if((user.getRole().equals(UserRoles.GESTOR) && user.getInmobiliaria().getId().equals(id)) || user.getRole().equals(UserRoles.ADMIN)) {
             Optional<Inmobiliaria> inmo = service.findById(id);
             if(inmo.isEmpty())
@@ -69,7 +66,7 @@ public class InmobiliariaController {
                 userEntityService.edit(saved);
                 return ResponseEntity
                         .status(HttpStatus.CREATED)
-                        .body(userDtoConverter.convertUserEntityToGetUserDto(saved));
+                        .body(userDtoConverter.convertUserEntityToGetGestorDto(saved));
         }
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
@@ -84,10 +81,11 @@ public class InmobiliariaController {
             return ResponseEntity
                     .notFound()
                     .build();
-        if(user.getInmobiliaria().getId().equals(gestor.get().getInmobiliaria().getId()) || user.getRole().equals(UserRoles.ADMIN)) {
-            gestor.get().removeFromInmobiliaria(user.getInmobiliaria());
+        if((user.getRole().equals(UserRoles.GESTOR)) && user.getInmobiliaria().getId().equals(gestor.get().getInmobiliaria().getId()) || user.getRole().equals(UserRoles.ADMIN)) {
+            gestor.get().getInmobiliaria().getGestores().remove(gestor.get());
+            this.service.edit(gestor.get().getInmobiliaria());
+            gestor.get().removeFromInmobiliaria(gestor.get().getInmobiliaria());
             userEntityService.deleteById(id);
-            this.service.edit(user.getInmobiliaria());
             return ResponseEntity
                     .noContent()
                     .build();
@@ -98,23 +96,21 @@ public class InmobiliariaController {
     }
 
     @GetMapping("/gestores")
-    public ResponseEntity<List<GetUserDto>> mostrarGestoresDeInmobiliaria(@PathVariable Long id, @AuthenticationPrincipal UserEntity user) {
-        if(user.getInmobiliaria().getId().equals(id)) {
-            List<GetUserDto> gestores = userEntityService.findGestoresDeInmobiliaria(id)
-                    .stream()
-                    .map(userDtoConverter::convertUserEntityToGetUserDto)
-                    .collect(Collectors.toList());
-            if (gestores.isEmpty())
-                return ResponseEntity
-                        .notFound()
-                        .build();
+    public ResponseEntity<List<GetUserDto>> mostrarGestoresDeInmobiliaria(@AuthenticationPrincipal UserEntity user) {
+
+        List<GetUserDto> gestores = userEntityService.findGestoresDeInmobiliaria(user.getInmobiliaria().getId())
+                .stream()
+                .map(userDtoConverter::convertUserEntityToGetUserDto)
+                .collect(Collectors.toList());
+
+        if (gestores.isEmpty())
             return ResponseEntity
-                    .ok()
-                    .body(gestores);
-        }
+                    .notFound()
+                    .build();
+
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .build();
+                .ok()
+                .body(gestores);
     }
 
     @GetMapping("")
@@ -155,6 +151,9 @@ public class InmobiliariaController {
             v.removeFromInmobiliaria(inmo.get());
             viviendaService.edit(v);
         }
+
+        service.deleteById(id);
+
         return ResponseEntity
                 .noContent()
                 .build();
