@@ -1,8 +1,6 @@
 package com.salesianostriana.dam.realestatesecurity.users.controllers;
 
-import com.salesianostriana.dam.realestatesecurity.users.dto.CreateUserDto;
-import com.salesianostriana.dam.realestatesecurity.users.dto.GetUserDto;
-import com.salesianostriana.dam.realestatesecurity.users.dto.UserDtoConverter;
+import com.salesianostriana.dam.realestatesecurity.users.dto.*;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
@@ -10,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +28,18 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         else
             return ResponseEntity.status(HttpStatus.CREATED).body(userDtoConverter.convertUserEntityToGetUserDto(saved));
+    }
+
+    @GetMapping("/gestores")
+    public ResponseEntity<List<GetGestorDto>> getGestores() {
+        List<GetGestorDto> gestores = userEntityService.findByRole(UserRoles.GESTOR)
+                .stream()
+                .map(userDtoConverter::convertUserEntityToGetGestorDto)
+                .collect(Collectors.toList());
+        if(gestores.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity
+                .ok().body(gestores);
     }
 }

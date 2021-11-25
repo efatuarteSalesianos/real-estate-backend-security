@@ -34,5 +34,26 @@ public class UserDtoConverter {
                 .build();
     }
 
+    public GetGestorDto convertUserEntityToGetGestorDto(UserEntity user) {
+        return GetGestorDto.builder()
+                .id(user.getId())
+                .full_name(user.getFull_name())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .inmobiliaria(user.getInmobiliaria())
+                .build();
+    }
+
+    public UserEntity convertCreateUserDtoToUserEntity(CreateUserDto newUser) {
+        return UserEntity
+                .builder()
+                .email(newUser.getEmail())
+                .full_name(newUser.getFull_name())
+                .avatar(newUser.getAvatar())
+                .password(newUser.getPassword())
+                .build();
+    }
+
+
 }
 

@@ -9,6 +9,7 @@ import com.salesianostriana.dam.realestatesecurity.services.InmobiliariaService;
 import com.salesianostriana.dam.realestatesecurity.services.ViviendaService;
 import com.salesianostriana.dam.realestatesecurity.uploads.PaginationLinkUtils;
 import com.salesianostriana.dam.realestatesecurity.users.dto.CreateUserDto;
+import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioDto;
 import com.salesianostriana.dam.realestatesecurity.users.dto.GetUserDto;
 import com.salesianostriana.dam.realestatesecurity.users.dto.UserDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
@@ -50,23 +51,31 @@ public class InmobiliariaController {
 
     @PostMapping("/{id}/gestor")
     public ResponseEntity<GetUserDto> nuevoGestorEnInmobiliaria(@PathVariable Long id, @RequestBody CreateUserDto nuevoGestor, @AuthenticationPrincipal UserEntity user) {
-        UserEntity saved = userEntityService.save(nuevoGestor, UserRoles.GESTOR);
-        Optional<Inmobiliaria> i = this.service.findById(id);
-        if (i.isEmpty())
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        if(user.getInmobiliaria().getId().equals(id) || user.getRole().equals(UserRoles.ADMIN)) {
-            i.get().getGestores().add(saved);
-            this.service.save(i.get());
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(userDtoConverter.convertUserEntityToGetUserDto(saved));
+        if((user.getRole().equals(UserRoles.GESTOR) && user.getInmobiliaria().getId().equals(id)) || user.getRole().equals(UserRoles.ADMIN)) {
+            Optional<Inmobiliaria> inmo = service.findById(id);
+            if(inmo.isEmpty())
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            UserEntity saved = userEntityService.save(nuevoGestor, UserRoles.GESTOR);
+            if(saved == null)
+                return ResponseEntity
+                        .badRequest()
+                        .build();
+            else
+                inmo.get().getGestores().add(saved);
+                service.edit(inmo.get());
+                saved.addToInmobiliaria(inmo.get());
+                userEntityService.edit(saved);
+                return ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(userDtoConverter.convertUserEntityToGetUserDto(saved));
         }
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build();
     }
+
 
     @DeleteMapping("/gestor/{id}")
     public ResponseEntity<?> eliminarGestorDeInmobiliaria(@PathVariable UUID id, @AuthenticationPrincipal UserEntity user) {
@@ -88,9 +97,9 @@ public class InmobiliariaController {
                 .build();
     }
 
-    @GetMapping("/{id}/gestor")
+    @GetMapping("/gestores")
     public ResponseEntity<List<GetUserDto>> mostrarGestoresDeInmobiliaria(@PathVariable Long id, @AuthenticationPrincipal UserEntity user) {
-        if(user.getInmobiliaria().getId().equals(id) || user.getRole().equals(UserRoles.ADMIN)) {
+        if(user.getInmobiliaria().getId().equals(id)) {
             List<GetUserDto> gestores = userEntityService.findGestoresDeInmobiliaria(id)
                     .stream()
                     .map(userDtoConverter::convertUserEntityToGetUserDto)
