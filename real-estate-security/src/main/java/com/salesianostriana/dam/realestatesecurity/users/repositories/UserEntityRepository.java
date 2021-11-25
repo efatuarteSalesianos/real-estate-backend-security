@@ -15,9 +15,10 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
 
     Optional<UserEntity> findFirstByEmail(String email);
 
+    @EntityGraph(value = "grafo-propietario-con-viviendas", type = EntityGraph.EntityGraphType.FETCH)
     List<UserEntity> findUserEntityByRole(UserRoles role);
 
-//    @Query("select u from UserEntity u left join u.inmobiliaria i where i.id = :inmobiliariaId")
-//    @EntityGraph(value = "gestor-con-inmobiliarias", type = EntityGraph.EntityGraphType.FETCH)
-//    List<UserEntity> findByInmobiliariaIdUsingQuery(@Param("inmobiliariaId") Long inmobiliariaId);
+    @Query("select u from UserEntity u left join u.inmobiliaria i where i.id = :inmobiliariaId")
+    @EntityGraph(value = "grafo-gestor-con-inmobiliaria", type = EntityGraph.EntityGraphType.FETCH)
+    List<UserEntity> findByInmobiliariaIdUsingQuery(@Param("inmobiliariaId") Long inmobiliariaId);
 }

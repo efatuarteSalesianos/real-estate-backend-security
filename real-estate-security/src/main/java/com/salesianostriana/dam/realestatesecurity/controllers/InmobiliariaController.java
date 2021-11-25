@@ -1,8 +1,12 @@
 package com.salesianostriana.dam.realestatesecurity.controllers;
 
 import com.salesianostriana.dam.realestatesecurity.dto.CreateInmobiliariaDto;
+import com.salesianostriana.dam.realestatesecurity.dto.GetInmobiliariaDto;
+import com.salesianostriana.dam.realestatesecurity.dto.InmobiliariaDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.model.Inmobiliaria;
+import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.services.InmobiliariaService;
+import com.salesianostriana.dam.realestatesecurity.services.ViviendaService;
 import com.salesianostriana.dam.realestatesecurity.uploads.PaginationLinkUtils;
 import com.salesianostriana.dam.realestatesecurity.users.dto.CreateUserDto;
 import com.salesianostriana.dam.realestatesecurity.users.dto.GetUserDto;
@@ -16,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +33,8 @@ public class InmobiliariaController {
     private final InmobiliariaService service;
     private final UserEntityService userEntityService;
     private final UserDtoConverter userDtoConverter;
-    private final PaginationLinkUtils paginationLinkUtils;
+    private final InmobiliariaDtoConverter dtoConverter;
+    private final ViviendaService viviendaService;
 
     @PostMapping("/")
     public ResponseEntity<CreateInmobiliariaDto> nuevaInmobiliaria(@RequestBody CreateInmobiliariaDto nuevaInmobiliaria) {
@@ -49,11 +56,16 @@ public class InmobiliariaController {
             return ResponseEntity
                     .notFound()
                     .build();
-        i.get().getGestores().add(saved);
-        this.service.save(i.get());
+        if(user.getInmobiliaria().getId().equals(id) || user.getRole().equals(UserRoles.ADMIN)) {
+            i.get().getGestores().add(saved);
+            this.service.save(i.get());
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(userDtoConverter.convertUserEntityToGetUserDto(saved));
+        }
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userDtoConverter.convertUserEntityToGetUserDto(saved));
+                .status(HttpStatus.FORBIDDEN)
+                .build();
     }
 
     @DeleteMapping("/gestor/{id}")
@@ -73,6 +85,69 @@ public class InmobiliariaController {
         }
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
+                .build();
+    }
+
+    @GetMapping("/{id}/gestor")
+    public ResponseEntity<List<GetUserDto>> mostrarGestoresDeInmobiliaria(@PathVariable Long id, @AuthenticationPrincipal UserEntity user) {
+        if(user.getInmobiliaria().getId().equals(id) || user.getRole().equals(UserRoles.ADMIN)) {
+            List<GetUserDto> gestores = userEntityService.findGestoresDeInmobiliaria(id)
+                    .stream()
+                    .map(userDtoConverter::convertUserEntityToGetUserDto)
+                    .collect(Collectors.toList());
+            if (gestores.isEmpty())
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            return ResponseEntity
+                    .ok()
+                    .body(gestores);
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<GetInmobiliariaDto>> listarInmobiliarias() {
+        List <GetInmobiliariaDto> inmobiliarias = service.findAll()
+                .stream()
+                .map(dtoConverter::inmobiliariaToGetInmobiliariaDto)
+                .collect(Collectors.toList());
+        if(inmobiliarias.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        return ResponseEntity
+                .ok()
+                .body(inmobiliarias);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetInmobiliariaDto> buscarInmobiliaria(@PathVariable Long id) {
+        return ResponseEntity
+                .of(this.service.findById(id)
+                .map(dtoConverter::inmobiliariaToGetInmobiliariaDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteInmobiliaria(@PathVariable Long id) {
+
+        Optional<Inmobiliaria> inmo = service.findById(id);
+
+        if(inmo.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+
+        List<Vivienda> viviendas = viviendaService.findViviendasDeInmobiliaria(id);
+
+        for (Vivienda v: viviendas) {
+            v.removeFromInmobiliaria(inmo.get());
+            viviendaService.edit(v);
+        }
+        return ResponseEntity
+                .noContent()
                 .build();
     }
 

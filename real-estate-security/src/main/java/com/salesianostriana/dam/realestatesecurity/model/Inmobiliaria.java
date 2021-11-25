@@ -21,10 +21,10 @@ public class Inmobiliaria implements Serializable {
     private String nombre, email, telefono, avatar;
 
     @Builder.Default
-    @OneToMany(mappedBy = "inmobiliaria", orphanRemoval = true)
+    @OneToMany(mappedBy = "inmobiliaria")
     private List<Vivienda> viviendas = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "inmobiliaria", orphanRemoval = true)
+    @OneToMany(mappedBy = "inmobiliaria", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<UserEntity> gestores = new ArrayList<>();
 }

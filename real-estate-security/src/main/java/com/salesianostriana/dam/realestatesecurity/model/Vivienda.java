@@ -31,7 +31,7 @@ public class Vivienda implements Serializable {
     private UserEntity propietario;
 
     @Builder.Default
-    @OneToMany(mappedBy = "vivienda")
+    @OneToMany(mappedBy = "vivienda", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<Interesa> intereses = new ArrayList<>();
 
     @ManyToOne

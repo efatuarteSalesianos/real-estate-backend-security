@@ -9,16 +9,12 @@ import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.repositories.ViviendaRepository;
 import com.salesianostriana.dam.realestatesecurity.services.base.BaseService;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
-import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,6 +29,7 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
 
     private final InmobiliariaService inmobiliariaService;
     private final ViviendaDtoConverter dtoConverter;
+    private final ViviendaRepository viviendaRepository;
 
     public Vivienda save(CreateViviendaDto viviendaNueva, UserEntity user) {
 
@@ -260,6 +257,13 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
 
     public List<Vivienda> topNViviendas(int limit) {
         return repositorio.topViviendas(limit);
+    }
+
+    public List<Vivienda> findViviendasDeInmobiliaria(Long inmobiliariaId) {
+        Optional<Inmobiliaria> inmo = inmobiliariaService.findById(inmobiliariaId);
+        if(inmo.isEmpty())
+            return null;
+        return viviendaRepository.viviendasDeInmobiliaria(inmobiliariaId);
     }
 
 }

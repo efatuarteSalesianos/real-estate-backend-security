@@ -25,7 +25,26 @@ import java.util.UUID;
                 @NamedAttributeNode(value = "direccion"),
                 @NamedAttributeNode(value = "telefono"),
                 @NamedAttributeNode(value = "avatar"),
-                @NamedAttributeNode(value = "viviendas")
+                @NamedAttributeNode(value = "viviendas", subgraph = "subgrafo-viviendas")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "subgrafo-viviendas",
+                        attributeNodes = {
+                                @NamedAttributeNode("titulo"),
+                                @NamedAttributeNode("latlng"),
+                                @NamedAttributeNode("direccion"),
+                                @NamedAttributeNode("poblacion"),
+                                @NamedAttributeNode("provincia"),
+                                @NamedAttributeNode("descripcion"),
+                                @NamedAttributeNode("avatar"),
+                                @NamedAttributeNode("codigoPostal"),
+                                @NamedAttributeNode("numHabitaciones"),
+                                @NamedAttributeNode("metrosCuadrados"),
+                                @NamedAttributeNode("numBanyos"),
+                                @NamedAttributeNode("tipo"),
+                                @NamedAttributeNode("precio"),
+                        })
         }
 )
 
@@ -36,7 +55,17 @@ import java.util.UUID;
                 @NamedAttributeNode(value = "direccion"),
                 @NamedAttributeNode(value = "telefono"),
                 @NamedAttributeNode(value = "avatar"),
-                @NamedAttributeNode(value = "inmobiliaria")
+                @NamedAttributeNode(value = "inmobiliaria", subgraph = "subgrafo-inmobiliaria")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "subgrafo-inmobiliaria",
+                        attributeNodes = {
+                                @NamedAttributeNode("nombre"),
+                                @NamedAttributeNode("email"),
+                                @NamedAttributeNode("telefono"),
+                                @NamedAttributeNode("avatar"),
+                        })
         }
 )
 
@@ -54,9 +83,18 @@ import java.util.UUID;
                 name = "subgrafo-viviendas",
                 attributeNodes = {
                         @NamedAttributeNode("titulo"),
+                        @NamedAttributeNode("latlng"),
+                        @NamedAttributeNode("direccion"),
                         @NamedAttributeNode("poblacion"),
                         @NamedAttributeNode("provincia"),
+                        @NamedAttributeNode("descripcion"),
+                        @NamedAttributeNode("avatar"),
                         @NamedAttributeNode("codigoPostal"),
+                        @NamedAttributeNode("numHabitaciones"),
+                        @NamedAttributeNode("metrosCuadrados"),
+                        @NamedAttributeNode("numBanyos"),
+                        @NamedAttributeNode("tipo"),
+                        @NamedAttributeNode("precio"),
                         @NamedAttributeNode(value = "intereses", subgraph = "subgrafo-intereses")
                 }),
                 @NamedSubgraph(

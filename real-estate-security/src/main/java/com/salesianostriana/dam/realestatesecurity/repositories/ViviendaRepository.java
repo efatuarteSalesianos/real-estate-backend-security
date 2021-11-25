@@ -22,4 +22,14 @@ public interface ViviendaRepository extends JpaRepository<Vivienda, Long>, JpaSp
             """, nativeQuery = true)
     public List<Vivienda> topViviendas(@Param("limit") int limit);
 
+    @Query(value = """
+            select * from vivienda v
+            where v.id in
+            (select * from inmobiliaria i
+            where i.id = :id)
+            """, nativeQuery = true)
+    public List<Vivienda> viviendasDeInmobiliaria(@Param("id") Long id);
+
+
+
 }

@@ -1,5 +1,7 @@
 package com.salesianostriana.dam.realestatesecurity.users.services;
 
+import com.salesianostriana.dam.realestatesecurity.model.Inmobiliaria;
+import com.salesianostriana.dam.realestatesecurity.services.InmobiliariaService;
 import com.salesianostriana.dam.realestatesecurity.services.base.BaseService;
 import com.salesianostriana.dam.realestatesecurity.users.dto.CreateUserDto;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service("userDetailService")
@@ -22,6 +25,7 @@ public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityR
 
     private final PasswordEncoder passwordEncoder;
     private final UserEntityRepository userEntityRepository;
+    private final InmobiliariaService inmobiliariaService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -47,5 +51,12 @@ public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityR
 
     public List<UserEntity> findByRole(UserRoles role) {
         return userEntityRepository.findUserEntityByRole(role);
+    }
+
+    public List<UserEntity> findGestoresDeInmobiliaria(Long inmobiliariaId) {
+        Optional<Inmobiliaria> inmo = inmobiliariaService.findById(inmobiliariaId);
+        if(inmo.isEmpty())
+            return null;
+        return userEntityRepository.findByInmobiliariaIdUsingQuery(inmobiliariaId);
     }
 }
