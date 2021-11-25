@@ -21,4 +21,7 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
     @Query("select u from UserEntity u left join u.inmobiliaria i where i.id = :inmobiliariaId")
     @EntityGraph(value = "grafo-gestor-con-inmobiliaria", type = EntityGraph.EntityGraphType.FETCH)
     List<UserEntity> findByInmobiliariaIdUsingQuery(@Param("inmobiliariaId") Long inmobiliariaId);
+
+    @Query("select u from UserEntity u left join u.intereses i where u.intereses>0")
+    List<UserEntity> findInteresados();
 }

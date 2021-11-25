@@ -59,4 +59,10 @@ public class UserEntityService extends BaseService<UserEntity, UUID, UserEntityR
             return null;
         return userEntityRepository.findByInmobiliariaIdUsingQuery(inmobiliariaId);
     }
+
+    public List<UserEntity> findInteresados() {
+        if(repositorio.findInteresados().isEmpty())
+            return null;
+        return repositorio.findInteresados();
+    }
 }

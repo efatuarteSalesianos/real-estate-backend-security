@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -77,4 +78,39 @@ public class UserController {
         return ResponseEntity
                 .ok().body(gestores);
     }
+
+//    @Operation(summary = "Se muestra un listado de todos los interesados")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200",
+//                    description = "Se muestra correctamente el listado",
+//                    content = {@Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = UserEntity.class))}),
+//            @ApiResponse(responseCode = "404",
+//                    description = "No hay interesados",
+//                    content = @Content),
+//            @ApiResponse(responseCode = "403",
+//                    description = "Acceso denegado",
+//                    content = @Content)
+//    })
+//    @GetMapping("/interesado/")
+//    public ResponseEntity<List<GetPropietarioInteresadoDto>> listarInteresados() {
+//    }
+//
+//    @Operation(summary = "Se muestra la información de un interesado")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200",
+//                    description = "Se muestra correctamente la información",
+//                    content = {@Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = UserEntity.class))}),
+//            @ApiResponse(responseCode = "404",
+//                    description = "No se encuentra el interesado con el id",
+//                    content = @Content),
+//            @ApiResponse(responseCode = "403",
+//                    description = "Acceso denegado",
+//                    content = @Content)
+//    })
+//    @GetMapping("/interesado/{id}")
+//    public ResponseEntity<List<GetPropietarioInteresadoDto>> buscarInteresado(@Parameter(description = "El id del interesado que se busca") @PathVariable UUID interesadoId) {
+//
+//    }
 }
