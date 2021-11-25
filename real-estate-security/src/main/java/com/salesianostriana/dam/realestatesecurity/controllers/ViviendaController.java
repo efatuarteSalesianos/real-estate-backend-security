@@ -1,13 +1,12 @@
 package com.salesianostriana.dam.realestatesecurity.controllers;
 
-import com.salesianostriana.dam.realestatesecurity.dto.CreateViviendaDto;
-import com.salesianostriana.dam.realestatesecurity.dto.EditViviendaDto;
-import com.salesianostriana.dam.realestatesecurity.dto.GetViviendaDto;
-import com.salesianostriana.dam.realestatesecurity.dto.ViviendaDtoConverter;
+import com.salesianostriana.dam.realestatesecurity.dto.*;
+import com.salesianostriana.dam.realestatesecurity.model.Interesa;
 import com.salesianostriana.dam.realestatesecurity.model.Tipo;
 import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.services.ViviendaService;
 import com.salesianostriana.dam.realestatesecurity.uploads.PaginationLinkUtils;
+import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioInteresadoDto;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
@@ -33,8 +32,8 @@ public class ViviendaController {
 
     private final ViviendaService service;
     private final ViviendaDtoConverter dtoConverter;
-    private final UserEntityService userEntityService;
     private final PaginationLinkUtils paginationLinkUtils;
+    private final InteresaDtoConverter interesaDtoConverter;
 
     @PostMapping("/")
     public ResponseEntity<CreateViviendaDto> nuevaVivienda(@RequestBody CreateViviendaDto viviendaNueva, @AuthenticationPrincipal UserEntity user) {
@@ -156,6 +155,38 @@ public class ViviendaController {
 
         return ResponseEntity
                 .ok().body(topViviendas);
+    }
+
+    @PostMapping("/{id}/meinteresa")
+    public ResponseEntity<GetInteresaDto> nuevoInteresado(GetPropietarioInteresadoDto propietarioDto, @PathVariable Long id) {
+        Interesa saved = service.createInteresa(propietarioDto, id);
+        if (saved == null)
+            return ResponseEntity
+                    .badRequest()
+                    .build();
+        else
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(interesaDtoConverter.interesaToGetInteresaDto(saved));
+    }
+
+    @DeleteMapping("/{id}/meinteresa")
+    public ResponseEntity<?> eliminarInteres(@PathVariable Long id, GetPropietarioInteresadoDto interesadoDto, @AuthenticationPrincipal UserEntity user){
+        Optional<Vivienda> vivienda = service.findById(id);
+        if(vivienda.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        if((user.getRole().equals(UserRoles.PROPIETARIO) && vivienda.get().getIntereses().contains(user.getIntereses())) || user.getRole().equals(UserRoles.ADMIN)) {
+            service.deleteInteresa(interesadoDto, id);
+            return ResponseEntity
+                    .noContent()
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+
     }
 
 }

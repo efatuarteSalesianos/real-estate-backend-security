@@ -15,6 +15,7 @@ public class GetViviendaDto {
     private int codigoPostal, numHabitaciones, metrosCuadrados, numBanyos;
     private boolean tienePiscina, tieneAscensor, tieneGaraje;
     private Tipo tipo;
+    private int numIntereses;
     private Long inmobiliariaId;
     private UUID propietarioId;
 }

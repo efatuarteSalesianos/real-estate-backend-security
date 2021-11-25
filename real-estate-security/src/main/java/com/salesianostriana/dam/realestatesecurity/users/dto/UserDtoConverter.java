@@ -54,6 +54,14 @@ public class UserDtoConverter {
                 .build();
     }
 
+    public UserEntity convertGetPropietarioInteresadoDtoToUserEntity(GetPropietarioInteresadoDto interesado) {
+        return UserEntity
+                .builder()
+                .id(interesado.getId())
+                .full_name(interesado.getFull_name())
+                .email(interesado.getEmail())
+                .avatar(interesado.getAvatar())
+                .build();
+    }
 
 }
-

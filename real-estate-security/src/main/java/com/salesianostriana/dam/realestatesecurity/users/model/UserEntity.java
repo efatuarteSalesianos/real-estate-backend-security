@@ -137,14 +137,14 @@ public class UserEntity implements UserDetails, Serializable {
 
     private UserRoles role;
 
-    @OneToMany(mappedBy = "propietario", orphanRemoval = true)
+    @OneToMany(mappedBy = "propietario", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<Vivienda> viviendas = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inmobiliaria", foreignKey = @ForeignKey(name = "FK_GESTOR_INMOBILIARIA"), nullable = true)
     private Inmobiliaria inmobiliaria;
 
-    @OneToMany(mappedBy = "interesado", orphanRemoval = true)
+    @OneToMany(mappedBy = "interesado", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<Interesa> intereses = new ArrayList<>();
 
     @Override

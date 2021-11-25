@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.realestatesecurity.users.dto;
 
+import com.salesianostriana.dam.realestatesecurity.dto.GetInteresaDto;
 import com.salesianostriana.dam.realestatesecurity.dto.GetViviendaDto;
 import lombok.*;
 
@@ -16,5 +17,4 @@ public class GetPropietarioDto {
     private String full_name, email, avatar;
     private int num_viviendas;
     private List<GetViviendaDto> viviendas = new ArrayList<>();
-
 }

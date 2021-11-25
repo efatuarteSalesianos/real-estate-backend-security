@@ -2,12 +2,16 @@ package com.salesianostriana.dam.realestatesecurity.services;
 
 import com.salesianostriana.dam.realestatesecurity.dto.CreateViviendaDto;
 import com.salesianostriana.dam.realestatesecurity.dto.GetViviendaDto;
+import com.salesianostriana.dam.realestatesecurity.dto.InteresaDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.dto.ViviendaDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.model.Inmobiliaria;
+import com.salesianostriana.dam.realestatesecurity.model.Interesa;
 import com.salesianostriana.dam.realestatesecurity.model.Tipo;
 import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.repositories.ViviendaRepository;
 import com.salesianostriana.dam.realestatesecurity.services.base.BaseService;
+import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioInteresadoDto;
+import com.salesianostriana.dam.realestatesecurity.users.dto.UserDtoConverter;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +33,10 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
 
     private final InmobiliariaService inmobiliariaService;
     private final ViviendaDtoConverter dtoConverter;
+    private final UserDtoConverter userDtoConverter;
     private final ViviendaRepository viviendaRepository;
+    private final InteresaDtoConverter interesaDtoConverter;
+    private final InteresaService interesaService;
 
     public Vivienda save(CreateViviendaDto viviendaNueva, UserEntity user) {
 
@@ -266,4 +273,19 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
         return viviendaRepository.viviendasDeInmobiliaria(inmobiliariaId);
     }
 
+    public Interesa createInteresa(GetPropietarioInteresadoDto interesadoDto, Long id){
+        UserEntity interesado = userDtoConverter.convertGetPropietarioInteresadoDtoToUserEntity(interesadoDto);
+        Interesa interesa = interesaDtoConverter.convertGetPropietarioInteresadoToInteresa(interesadoDto);
+        Optional<Vivienda> vivienda = findById(id);
+
+        if (vivienda.isEmpty())
+            return null;
+        interesaService.createInteresa(vivienda.get(), interesado, interesadoDto.getMensaje());
+        return interesa;
+    }
+
+    public void deleteInteresa(GetPropietarioInteresadoDto interesadoDto, Long id) {
+        Interesa i = interesaService.findInteresa(id, interesadoDto.getId());
+        interesaService.delete(i);
+    }
 }

@@ -29,6 +29,7 @@ public class ViviendaDtoConverter {
                 .tieneAscensor(v.isTieneAscensor())
                 .tieneGaraje(v.isTieneGaraje())
                 .tipo(v.getTipo())
+                .numIntereses(v.getIntereses().size())
                 .inmobiliariaId(v.getInmobiliaria()==null?null:v.getInmobiliaria().getId())
                 .propietarioId(v.getPropietario()==null?null:v.getPropietario().getId())
                 .build();
