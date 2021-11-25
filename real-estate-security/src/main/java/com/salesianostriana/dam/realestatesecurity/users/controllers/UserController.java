@@ -79,22 +79,32 @@ public class UserController {
                 .ok().body(gestores);
     }
 
-//    @Operation(summary = "Se muestra un listado de todos los interesados")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",
-//                    description = "Se muestra correctamente el listado",
-//                    content = {@Content(mediaType = "application/json",
-//                            schema = @Schema(implementation = UserEntity.class))}),
-//            @ApiResponse(responseCode = "404",
-//                    description = "No hay interesados",
-//                    content = @Content),
-//            @ApiResponse(responseCode = "403",
-//                    description = "Acceso denegado",
-//                    content = @Content)
-//    })
-//    @GetMapping("/interesado/")
-//    public ResponseEntity<List<GetPropietarioInteresadoDto>> listarInteresados() {
-//    }
+    @Operation(summary = "Se muestra un listado de todos los interesados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Se muestra correctamente el listado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserEntity.class))}),
+            @ApiResponse(responseCode = "404",
+                    description = "No hay interesados",
+                    content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Acceso denegado",
+                    content = @Content)
+    })
+    @GetMapping("/interesado/")
+    public ResponseEntity<List<GetPropietarioDto>> listarInteresados() {
+        List<GetPropietarioDto> interesados = userEntityService.findInteresados()
+                .stream()
+                .map(userDtoConverter::convertUserEntityToGetPropietarioDto).collect(Collectors.toList());
+        if(interesados.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(interesados);
+    }
 //
 //    @Operation(summary = "Se muestra la información de un interesado")
 //    @ApiResponses(value = {
