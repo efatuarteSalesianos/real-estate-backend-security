@@ -1,8 +1,14 @@
 package com.salesianostriana.dam.realestatesecurity.security;
 
+import com.salesianostriana.dam.realestatesecurity.model.Vivienda;
 import com.salesianostriana.dam.realestatesecurity.security.jwt.JwtProvider;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.security.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +30,19 @@ public class AuthenticationController {
     private final JwtProvider jwtProvider;
     private final JwtUserConverter jwtUserConverter;
 
+    @Operation(summary = "Se loguea un usuario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "El usuario inicia sesión correctamente",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Vivienda.class))}),
+            @ApiResponse(responseCode = "400",
+                    description = "Hay un error en los datos",
+                    content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Acceso denegado",
+                    content = @Content)
+    })
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
 

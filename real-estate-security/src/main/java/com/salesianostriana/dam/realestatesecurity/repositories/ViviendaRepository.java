@@ -29,7 +29,4 @@ public interface ViviendaRepository extends JpaRepository<Vivienda, Long>, JpaSp
             where i.id = :id)
             """, nativeQuery = true)
     public List<Vivienda> viviendasDeInmobiliaria(@Param("id") Long id);
-
-
-
 }

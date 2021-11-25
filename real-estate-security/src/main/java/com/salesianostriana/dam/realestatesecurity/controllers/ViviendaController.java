@@ -10,6 +10,12 @@ import com.salesianostriana.dam.realestatesecurity.users.dto.GetPropietarioInter
 import com.salesianostriana.dam.realestatesecurity.users.model.UserEntity;
 import com.salesianostriana.dam.realestatesecurity.users.model.UserRoles;
 import com.salesianostriana.dam.realestatesecurity.users.services.UserEntityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +28,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/vivienda")
+@Tag(name="Vivienda", description = "Clase controladora de viviendas")
 public class ViviendaController {
 
     private final ViviendaService service;
@@ -35,6 +41,19 @@ public class ViviendaController {
     private final PaginationLinkUtils paginationLinkUtils;
     private final InteresaDtoConverter interesaDtoConverter;
 
+    @Operation(summary = "Se añade una vivienda")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "Se ha creado correctamente",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Vivienda.class))}),
+            @ApiResponse(responseCode = "400",
+                    description = "Hay un error en los datos",
+                    content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Acceso denegado",
+                    content = @Content)
+    })
     @PostMapping("/")
     public ResponseEntity<CreateViviendaDto> nuevaVivienda(@RequestBody CreateViviendaDto viviendaNueva, @AuthenticationPrincipal UserEntity user) {
         service.save(viviendaNueva, user);
