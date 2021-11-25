@@ -177,7 +177,7 @@ public class ViviendaController {
             return ResponseEntity
                     .notFound()
                     .build();
-        if((user.getRole().equals(UserRoles.PROPIETARIO) && vivienda.get().getIntereses().contains(user.getIntereses())) || user.getRole().equals(UserRoles.ADMIN)) {
+        if((user.getRole().equals(UserRoles.PROPIETARIO) && vivienda.get().getIntereses().contains(user)) || user.getRole().equals(UserRoles.ADMIN)) {
             service.deleteInteresa(interesadoDto, id);
             return ResponseEntity
                     .noContent()
