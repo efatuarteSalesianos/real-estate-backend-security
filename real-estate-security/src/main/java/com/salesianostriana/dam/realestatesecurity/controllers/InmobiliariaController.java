@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,6 +54,26 @@ public class InmobiliariaController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userDtoConverter.convertUserEntityToGetUserDto(saved));
+    }
+
+    @DeleteMapping("/gestor/{id}")
+    public ResponseEntity<?> eliminarGestorDeInmobiliaria(@PathVariable UUID id, @AuthenticationPrincipal UserEntity user) {
+        Optional<UserEntity> gestor = userEntityService.findById(id);
+        if(gestor.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        if(user.getInmobiliaria().getId().equals(gestor.get().getInmobiliaria().getId()) || user.getRole().equals(UserRoles.ADMIN)) {
+            gestor.get().removeFromInmobiliaria(user.getInmobiliaria());
+            userEntityService.deleteById(id);
+            this.service.edit(user.getInmobiliaria());
+            return ResponseEntity
+                    .noContent()
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
     }
 
 }
