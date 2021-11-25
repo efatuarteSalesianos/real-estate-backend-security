@@ -285,7 +285,7 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
     }
 
     public void deleteInteresa(GetPropietarioInteresadoDto interesadoDto, Long id) {
-        Interesa i = interesaService.findInteresa(id, interesadoDto.getId());
+        Interesa i = interesaService.findInteresa(interesadoDto.getId(), id);
         interesaService.delete(i);
     }
 }

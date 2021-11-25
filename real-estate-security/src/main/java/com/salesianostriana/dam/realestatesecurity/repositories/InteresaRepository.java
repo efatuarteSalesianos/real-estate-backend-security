@@ -13,8 +13,8 @@ public interface InteresaRepository extends JpaRepository<Interesa, InteresaPK> 
     @Query(value = """
             SELECT i
             FROM Interesa i
-            WHERE i.vivienda.id = :id
-              AND  i.interesado.id = :id2
+            WHERE i.interesado.id = :id
+              AND  i.vivienda.id = :id2
             """, nativeQuery = true)
-    Interesa findOne(@Param("id") Long idVivienda, @Param("id2") UUID idInteresado);
+    Interesa findOne(@Param("id") UUID interesadoId, @Param("id2") Long viviendaId);
 }

@@ -27,7 +27,7 @@ public class InteresaService extends BaseService<Interesa, InteresaPK, InteresaR
         return interesa;
     }
 
-    public Interesa findInteresa (Long id1, UUID id2) {
+    public Interesa findInteresa (UUID id1, Long id2) {
         return repositorio.findOne(id1, id2);
     }
 }
