@@ -23,10 +23,14 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
     List<UserEntity> findByInmobiliariaIdUsingQuery(@Param("inmobiliariaId") Long inmobiliariaId);
 
     @Query(value = """
-            select distinct * from user_entity u
-            where u.id in
-            (select interesado
-            from interesa)
-            """, nativeQuery = true)
+        select u.* from user_entity u
+        where u.role = 'PROPIETARIO' 
+        and u.id in
+        (select i.interesado_id
+        from interesa i
+        where i.interesado_id = u.id)
+        """, nativeQuery = true)
+    @EntityGraph(value = "grafo-propietario-con-viviendas-e-intereses", type = EntityGraph.EntityGraphType.FETCH)
     List<UserEntity> findInteresados();
+
 }

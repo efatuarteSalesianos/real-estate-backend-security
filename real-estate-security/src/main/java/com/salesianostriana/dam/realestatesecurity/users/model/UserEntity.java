@@ -70,7 +70,7 @@ import java.util.UUID;
 )
 
 @NamedEntityGraph(
-        name = "grafo-propietario-con-viviendas-y-subgrafos",
+        name = "grafo-propietario-con-viviendas-e-intereses",
         attributeNodes = {
                 @NamedAttributeNode(value = "full_name"),
                 @NamedAttributeNode(value = "direccion"),
