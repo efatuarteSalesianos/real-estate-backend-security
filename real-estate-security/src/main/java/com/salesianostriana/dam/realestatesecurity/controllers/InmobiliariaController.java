@@ -255,4 +255,41 @@ public class InmobiliariaController {
                 .build();
     }
 
+    @Operation(summary = "Se muestra un listado de todos los usuarios con el rol gestor de una inmobiliaria")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Se muestra correctamente",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Inmobiliaria.class))}),
+            @ApiResponse(responseCode = "404",
+                    description = "No hay gestores",
+                    content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Acceso denegado",
+                    content = @Content)
+    })
+    @GetMapping("/{id}/gestores")
+    public ResponseEntity<List<GetGestorDto>> getGestores(@Parameter(description = "El id de la inmobiliaria que vamos a consultar") @PathVariable Long id, @AuthenticationPrincipal UserEntity user) {
+        Optional<Inmobiliaria> inmo = service.findById(id);
+        if (inmo.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        if ((user.getRole().equals(UserRoles.GESTOR) && user.getInmobiliaria().equals(id)) || user.getRole().equals(UserRoles.ADMIN)) {
+            List<GetGestorDto> gestores = userEntityService.findByRole(UserRoles.GESTOR)
+                    .stream()
+                    .filter(g -> g.getInmobiliaria().getId().equals(id))
+                    .map(userDtoConverter::convertUserEntityToGetGestorDto)
+                    .collect(Collectors.toList());
+            if (gestores.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            return ResponseEntity
+                    .ok().body(gestores);
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+
+    }
 }

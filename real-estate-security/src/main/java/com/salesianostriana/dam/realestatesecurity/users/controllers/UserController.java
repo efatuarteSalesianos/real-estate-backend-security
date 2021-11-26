@@ -55,32 +55,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(userDtoConverter.convertUserEntityToGetUserDto(saved));
     }
 
-    @Operation(summary = "Se muestra un listado de todos los usuarios con el rol gestor")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Se muestra correctamente",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Inmobiliaria.class))}),
-            @ApiResponse(responseCode = "404",
-                    description = "No hay gestores",
-                    content = @Content),
-            @ApiResponse(responseCode = "403",
-                    description = "Acceso denegado",
-                    content = @Content)
-    })
-    @GetMapping("/gestores")
-    public ResponseEntity<List<GetGestorDto>> getGestores() {
-        List<GetGestorDto> gestores = userEntityService.findByRole(UserRoles.GESTOR)
-                .stream()
-                .map(userDtoConverter::convertUserEntityToGetGestorDto)
-                .collect(Collectors.toList());
-        if(gestores.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity
-                .ok().body(gestores);
-    }
-
     @Operation(summary = "Se muestra un listado de todos los interesados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
