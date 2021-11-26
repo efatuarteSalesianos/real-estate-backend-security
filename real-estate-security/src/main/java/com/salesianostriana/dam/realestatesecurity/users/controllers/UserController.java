@@ -102,9 +102,10 @@ public class UserController {
                     .notFound()
                     .build();
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .ok()
                 .body(interesados);
     }
+
 //
 //    @Operation(summary = "Se muestra la información de un interesado")
 //    @ApiResponses(value = {
