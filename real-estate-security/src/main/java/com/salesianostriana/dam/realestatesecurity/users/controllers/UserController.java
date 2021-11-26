@@ -15,9 +15,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -106,22 +108,38 @@ public class UserController {
                 .body(interesados);
     }
 
-//
-//    @Operation(summary = "Se muestra la información de un interesado")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",
-//                    description = "Se muestra correctamente la información",
-//                    content = {@Content(mediaType = "application/json",
-//                            schema = @Schema(implementation = UserEntity.class))}),
-//            @ApiResponse(responseCode = "404",
-//                    description = "No se encuentra el interesado con el id",
-//                    content = @Content),
-//            @ApiResponse(responseCode = "403",
-//                    description = "Acceso denegado",
-//                    content = @Content)
-//    })
-//    @GetMapping("/interesado/{id}")
-//    public ResponseEntity<List<GetPropietarioInteresadoDto>> buscarInteresado(@Parameter(description = "El id del interesado que se busca") @PathVariable UUID interesadoId) {
-//
-//    }
+    @Operation(summary = "Se muestra la información de un interesado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Se muestra correctamente la información",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserEntity.class))}),
+            @ApiResponse(responseCode = "404",
+                    description = "No se encuentra el interesado con el id",
+                    content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Acceso denegado",
+                    content = @Content)
+    })
+    @GetMapping("/interesado/{id}")
+    public ResponseEntity<GetPropietarioDto> buscarInteresado(@Parameter(description = "El id del interesado que se busca") @PathVariable UUID interesadoId, @AuthenticationPrincipal UserEntity user) {
+        Optional<UserEntity> interesado = userEntityService.findById(interesadoId);
+        if(interesado.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        if((user.getRole().equals(UserRoles.PROPIETARIO) && user.getId().equals(interesadoId)) || user.getRole().equals(UserRoles.ADMIN)) {
+            if (userEntityService.findInteresados().contains(interesado.get()))
+                return ResponseEntity
+                        .ok()
+                        .body(userDtoConverter.convertUserEntityToGetPropietarioDto(interesado.get()));
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+    }
+
 }
