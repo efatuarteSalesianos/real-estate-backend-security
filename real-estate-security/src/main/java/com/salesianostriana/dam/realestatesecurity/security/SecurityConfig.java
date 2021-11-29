@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
+                // TODO Seguro que todas estas rutas se pueden agrupar para que esta configuración sea más genérica
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth/register/PROPIETARIO").anonymous()
                 .antMatchers(HttpMethod.POST, "/auth/login").anonymous()
