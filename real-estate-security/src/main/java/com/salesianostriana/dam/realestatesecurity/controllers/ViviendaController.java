@@ -322,7 +322,33 @@ public class ViviendaController {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build();
+    }
 
+    @Operation(summary = "Se muestran las viviendas de un propietario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Se muestra la lista de viviendas del propietario logueado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Vivienda.class))}),
+            @ApiResponse(responseCode = "404",
+                    description = "No existen viviendas",
+                    content = @Content),
+            @ApiResponse(responseCode = "403",
+                    description = "Acceso denegado",
+                    content = @Content)
+    })
+    @GetMapping("/user")
+    public ResponseEntity<List<GetViviendaDto>> viviendasUser(@AuthenticationPrincipal UserEntity user) {
+        List<GetViviendaDto> viviendasUser = service.viviendasPropietario(user.getId());
+
+        if(viviendasUser.isEmpty())
+            return ResponseEntity
+                    .notFound()
+                    .build();
+
+        return ResponseEntity
+                .ok()
+                .body(viviendasUser);
     }
 
 }

@@ -21,6 +21,7 @@ public class InteresaService extends BaseService<Interesa, InteresaPK, InteresaR
                 .vivienda(v)
                 .mensaje(mensaje)
                 .build();
+        v.setFavorite(true);
         interesa.addToInteresado(user);
         interesa.addToVivienda(v);
         this.save(interesa);

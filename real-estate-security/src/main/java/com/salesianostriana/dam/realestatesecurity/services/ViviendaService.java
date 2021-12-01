@@ -26,6 +26,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -287,5 +289,13 @@ public class ViviendaService extends BaseService<Vivienda, Long, ViviendaReposit
     public void deleteInteresa(GetPropietarioInteresadoDto interesadoDto, Long id) {
         Interesa i = interesaService.findInteresa(interesadoDto.getId(), id);
         interesaService.delete(i);
+    }
+
+    public List<GetViviendaDto> viviendasPropietario(UUID id) {
+
+        return repositorio.viviendasPropietario(id)
+                .stream()
+                .map(dtoConverter::viviendaToGetViviendaDto)
+                .collect(Collectors.toList());
     }
 }
